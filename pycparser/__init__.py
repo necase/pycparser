@@ -7,6 +7,8 @@
 # Copyright (C) 2008-2012, Eli Bendersky
 # License: BSD
 #-----------------------------------------------------------------
+from __future__ import with_statement
+
 __all__ = ['c_lexer', 'c_parser', 'c_ast']
 __version__ = '2.10'
 
@@ -43,7 +45,9 @@ def preprocess_file(filename, cpp_path='cpp', cpp_args=''):
                         stdout=PIPE,
                         universal_newlines=True)
         text = pipe.communicate()[0]
-    except OSError as e:
+    except OSError:
+        import sys
+        _, e = sys.exc_info()[:2]
         raise RuntimeError("Unable to invoke 'cpp'.  " +
             'Make sure its path was passed correctly\n' +
             ('Original error: %s' % e))
