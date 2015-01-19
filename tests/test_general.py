@@ -27,9 +27,14 @@ class TestParsing(unittest.TestCase):
     def test_with_cpp(self):
         memmgr_path = self._find_file('memmgr.c')
         c_files_path = os.path.dirname(memmgr_path)
-        ast = parse_file(memmgr_path, use_cpp=True,
-            cpp_path=CPPPATH,
-            cpp_args='-I%s' % c_files_path)
+        if sys.platform == 'darwin':
+          ast = parse_file(memmgr_path, use_cpp=True,
+              cpp_path='c99',
+              cpp_args=['-E', '-I%s' % c_files_path])
+        else:
+          ast = parse_file(memmgr_path, use_cpp=True,
+              cpp_path=CPPPATH,
+              cpp_args='-I%s' % c_files_path)
         self.assertTrue(isinstance(ast, c_ast.FileAST))
 
         fake_libc = os.path.join(c_files_path, '..', '..',
